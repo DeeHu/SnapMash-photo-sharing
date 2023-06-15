@@ -9,7 +9,7 @@ from flask_login import login_user, logout_user, login_required
 
 app = Flask(__name__)
 # app.config['SECRET_KEY'] = 'your-secret-key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:ayschoi@localhost/flasksql'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/flasksql'
 CORS(app)
 
 db = SQLAlchemy(app)
