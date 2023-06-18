@@ -1,0 +1,17 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: ./photo-sharing-server
+      dockerfile: Dockerfile
+    ports:
+      - '5001:5000'
+    volumes:
+      - /Users/dihu/Documents/Personal Projects/SnapMash-photo-sharing/photo-sharing-server/users.json:/app/users.json
+
+  frontend:
+    build:
+      context: ./photo-sharing-client
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'

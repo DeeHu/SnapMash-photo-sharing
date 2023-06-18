@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "dee",
+    "email": "dee@mail.com",
+    "password": "$2b$12$7tKoQDw6BkXSkG5I8xmtX.a5SMKIHe.oDwBqXhqNDPgaF6Vhg/cRG"
+  },
+  {
+    "id": 2,
+    "name": "Alice",
+    "email": "alice@mail.com",
+    "password": "$2b$12$xVUPxEELfm5JeGndhShDI.ZJY/efcGxholV/3HBGVDgMS2I64qdn."
+  },
+  {
+    "id": 3,
+    "name": "bob",
+    "email": "bob@mail.com",
+    "password": "$2b$12$8s9XTYOjI105azvtRNKIMOQbvtOKChetgjYVJuoypCOcBfu9xcx6K"
+  },
+  {
+    "id": 4,
+    "name": "Jane",
+    "email": "jane@mail.com",
+    "password": "$2b$12$a1s3wuG2ynZMX8KVHykzpOwQoslDgzeBVkqKYfQKWs9FJWxETbPH."
+  }
+]
