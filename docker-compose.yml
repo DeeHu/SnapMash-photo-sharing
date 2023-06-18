@@ -7,7 +7,7 @@ services:
     ports:
       - '5001:5000'
     volumes:
-      - /Users/dihu/Documents/Personal Projects/SnapMash-photo-sharing/photo-sharing-server/users.json:/app/users.json
+      - ./photo-sharing-server/users.json:/app/users.json
 
   frontend:
     build:
