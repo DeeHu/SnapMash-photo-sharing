@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
+import {useState} from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AuthForm from './AuthForm';
-import Button from '@mui/material/Button';
+import Dashboard from './Dashboard'; // assuming you have created a Dashboard component
 
 function App() {
-  const [isSignup, setIsSignup] = useState(true);
+  const [isLogged, setIsLogged] = useState(false);
 
   return (
     <div className="App">
-      <h1>{isSignup ? 'Sign Up' : 'Log In'}</h1>
-      <AuthForm isSignup={isSignup} />
-      <Button onClick={() => setIsSignup(!isSignup)}>
-        Switch to {isSignup ? 'Log In' : 'Sign Up'}
-      </Button>
+      <Router>
+        <Routes>
+          <Route path="/login" element={isLogged ? <Navigate to="/dashboard" /> : <AuthForm setIsLogged={setIsLogged}/>}/>
+          <Route path="/dashboard" element={isLogged ? <Dashboard /> : <Navigate to="/login" />}/>
+        </Routes>
+      </Router>
     </div>
   );
 }

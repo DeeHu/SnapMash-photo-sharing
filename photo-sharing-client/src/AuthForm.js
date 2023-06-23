@@ -4,8 +4,25 @@ import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 
 import { useState } from "react";
+import { initializeApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
-const AuthForm = ({ isSignup }) => {
+
+// replace with your Firebase project configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyA_tKltPUL0sDRf8xUjafDEyVDOSsh-j4A",
+  authDomain: "photo-sharing-388604.firebaseapp.com",
+  projectId: "photo-sharing-388604",
+  storageBucket: "photo-sharing-388604.appspot.com",
+  messagingSenderId: "224980020804",
+  appId: "1:224980020804:web:639d92bca74f2bb2521611"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const AuthForm = ({ isSignup, setIsLogged}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -13,34 +30,31 @@ const AuthForm = ({ isSignup }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const response = await fetch(
-      `http://127.0.0.1:5001/${isSignup ? "signup" : "login"}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
-      }
-    );
-
-    const data = await response.json();
-    console.log(data);
-    if (response.ok) {
-      alert(data.message);
+    if(isSignup) {
+      createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        setIsLogged(true);
+        alert("User created successfully");
+        setEmail("");
+        setPassword("");
+        setName("");
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
     } else {
-      alert(data.message);
+      signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        setIsLogged(true);
+        alert("Logged in successfully");
+        setEmail("");
+        setPassword("");
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
     }
-
-    setEmail("");
-    setPassword("");
-    setName("");
   };
-
   return (
     <Box
       component="form"
@@ -80,6 +94,7 @@ const AuthForm = ({ isSignup }) => {
       </Button>
     </Box>
   );
+
 };
 
 export default AuthForm;

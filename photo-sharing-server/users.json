@@ -1,3 +1,4 @@
+
 [
   {
     "id": 1,
@@ -22,5 +23,18 @@
     "name": "Jane",
     "email": "jane@mail.com",
     "password": "$2b$12$a1s3wuG2ynZMX8KVHykzpOwQoslDgzeBVkqKYfQKWs9FJWxETbPH."
+  },
+  {
+    "id": 5,
+    "name": "olloie",
+    "email": "ollie@mail.com",
+    "password": "$2b$12$YYPOFTRteGOiQQcDO8ZfE.fbRnW8r7Y7roei7Rqt6WYpDjCqAMs0m"
+  },
+  {
+    "id": 6,
+    "name": "deedda",
+    "email": "dedaaaa@mail.com",
+    "password": "$2b$12$x2GEpzCkut9G59m1.o1AOelXFX29tc/RSK2iDTwS8gyGPgoKBD.tu"
   }
 ]
+
