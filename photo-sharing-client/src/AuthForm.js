@@ -10,12 +10,12 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } f
 
 // replace with your Firebase project configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyA_tKltPUL0sDRf8xUjafDEyVDOSsh-j4A",
-  authDomain: "photo-sharing-388604.firebaseapp.com",
-  projectId: "photo-sharing-388604",
-  storageBucket: "photo-sharing-388604.appspot.com",
-  messagingSenderId: "224980020804",
-  appId: "1:224980020804:web:639d92bca74f2bb2521611"
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
 };
 
 // Initialize Firebase
