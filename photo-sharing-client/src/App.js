@@ -1,7 +1,7 @@
 import React from 'react';
 import {useState} from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import AuthForm from './Components/AuthForm';
+import AuthForm from './Components/Login/AuthForm';
 import Dashboard from './Components/Dashboard'; 
 
 function App() {
