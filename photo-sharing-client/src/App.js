@@ -1,8 +1,8 @@
 import React from 'react';
 import {useState} from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import AuthForm from './AuthForm';
-import Dashboard from './Dashboard'; // assuming you have created a Dashboard component
+import AuthForm from './Components/AuthForm';
+import Dashboard from './Components/Dashboard'; 
 
 function App() {
   const [isLogged, setIsLogged] = useState(false);
@@ -11,7 +11,8 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          <Route path="/login" element={isLogged ? <Navigate to="/dashboard" /> : <AuthForm setIsLogged={setIsLogged}/>}/>
+          <Route path="/login" element={isLogged ? <Navigate to="/dashboard" /> : <AuthForm isSignup={false} setIsLogged={setIsLogged}/>}/>
+          <Route path="/signup" element={isLogged ? <Navigate to="/dashboard" /> : <AuthForm isSignup={true} setIsLogged={setIsLogged}/>}/>
           <Route path="/dashboard" element={isLogged ? <Dashboard /> : <Navigate to="/login" />}/>
         </Routes>
       </Router>
