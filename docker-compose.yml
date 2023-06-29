@@ -6,8 +6,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - '5001:5000'
-    volumes:
-      - ./photo-sharing-server/users.json:/app/users.json
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@db:5432/postgres"
 
   frontend:
     build:
@@ -15,3 +17,18 @@ services:
       dockerfile: Dockerfile
     ports:
       - '3000:3000'
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
+    driver: local

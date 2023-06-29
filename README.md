@@ -8,8 +8,11 @@ Make sure you download Docker to your laptop
 3. Build the Docker images:
 Run CLI `docker-compose build`
 4. Start the services:
-Run CLI `docker-compose run`
+Run CLI `docker-compose up`
 
 The React application will be accessible at http://localhost:3000, and the Flask application at http://localhost:5001.
+
+
+
 
 

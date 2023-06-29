@@ -20,14 +20,15 @@ const MyDropzone = () => {
     const formData = new FormData();
     formData.append('img', fileToUpload);
 
-    axios.post('http://localhost:5000/process', formData, {
+    axios.post('http://127.0.0.1:5000/process', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     }).then(res => {
-      setResponse(res.data);
+      setResponse(res.data.message);
     }).catch(error => {
       console.error(error);
+      setResponse(error.response.data.message);
     });
   }
 
