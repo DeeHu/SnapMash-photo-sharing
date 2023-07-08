@@ -2,6 +2,9 @@ import React from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Grid from '@mui/material/Grid';
 
 import { useState } from "react";
 import { initializeApp } from "firebase/app";
@@ -57,10 +60,21 @@ const AuthForm = ({ isSignup, setIsLogged}) => {
   };
   return (
     <Box
+      sx={{
+        marginTop: 15,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+    >
+    <Typography component="h1" variant="h5">
+        Sign In
+    </Typography>
+    <Box
       component="form"
       onSubmit={handleSubmit}
       sx={{
-        "& > :not(style)": { m: 1, width: "25ch" },
+        "& > :not(style)": { m: 1, width: "25ch", display: 'flex', flexDirection: 'column', marginTop: 2 },
       }}
       noValidate
       autoComplete="off"
@@ -89,9 +103,22 @@ const AuthForm = ({ isSignup, setIsLogged}) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button variant="contained" type="submit">
+      <Button variant="contained" type="submit" style={{width: 100}}>
         {isSignup ? "Sign Up" : "Log In"}
       </Button>
+      <Grid container>
+              <Grid item xs>
+                <Link href="#" variant="body2">
+                  Forgot password?
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link href="#" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </Grid>
+       </Grid>
+    </Box>
     </Box>
   );
 
