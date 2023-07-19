@@ -15,28 +15,6 @@ db.init_app(app)
 CORS(app)
 
 
-# class User(db.Model):
-#     id = db.Column(db.String(128), primary_key=True)
-#     username = db.Column(db.String(64), index=True, unique=True)
-
-#     def __repr__(self):
-#         return "<User %r>" % self.username
-# class User(db.Model):
-#     __tablename__ = 'User'
-#     ID = db.Column(db.String(20), primary_key=True)
-#     User_name = db.Column(db.String(100))
-#     Email = db.Column(db.String(20))
-#     Registration_date = db.Column(Date)
-
-# class Group(db.Model):
-#     __tablename__ = 'Group'
-#     ID = db.Column(db.Integer, primary_key=True)
-#     Name = db.Column(db.String(100))
-#     User_ID = db.Column(db.String(20), db.ForeignKey('User.ID'))
-
-#     # Define the relationship to User here
-#     user = db.relationship('User', backref='groups')
-
 def create_tables():
     db.create_all()  # This will create tables according to the above schema if they do not exist
 
