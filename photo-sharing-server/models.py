@@ -75,8 +75,8 @@ class TagVisibility(db.Model):
 
 class PhotoTag(db.Model):
     __tablename__ = 'photo_tag'
-    Photo_ID = db.Column(db.String(20), db.ForeignKey('photo.ID'))
-    Tag_ID = db.Column(db.String(20), db.ForeignKey('tag.ID'))
+    Photo_ID = db.Column(db.String(20), db.ForeignKey('photo.ID'),primary_key=True)
+    Tag_ID = db.Column(db.String(20), db.ForeignKey('tag.ID'),primary_key=True)
     # Establishing relationships
     photo = db.relationship('Photo', foreign_keys=[Photo_ID])
     tag = db.relationship('Tag', foreign_keys=[Tag_ID])
