@@ -12,7 +12,17 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ[
 ]  # Use the DATABASE_URL from env variable
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
-CORS(app)
+cors = CORS(app, resources={
+    r"/*": {
+        "origins": "http://localhost:3000",
+        "allow_headers": [
+            "Content-Type",
+            "Authorization",
+            "Access-Control-Allow-Headers"
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]  # update this list with your methods
+    }
+})
 
 
 def create_tables():
@@ -47,6 +57,7 @@ def get_users():
 
 @app.route("/process", methods=["POST"])
 def process():
+    print (request.files)
     if "img" not in request.files:
         return jsonify({"error": "No file part"}), 400
     file = request.files["img"]
@@ -56,15 +67,15 @@ def process():
         filename = secure_filename(file.filename)
         path = request.form.get(
             "path",
-            "/Users/dihu/Documents/Personal Projects/SnapMash-photo-sharing/photo-sharing-server/storage",
-        )  # get the path from the form data, use a default if not provided
+            "/app/storage",
+        )  # the path where the image is going to be saved(in development)
         os.makedirs(path, exist_ok=True)  # create the directory if it doesn't exist
         file.save(os.path.join(path, filename))
 
         # Save the image to the database
-        new_image = Image(filename=filename, user_id=1)
-        db.session.add(new_image)
-        db.session.commit()
+        # new_image = Image(filename=filename, user_id=1)
+        # db.session.add(new_image)
+        # db.session.commit()
 
         return jsonify({"message": "Image upload successful"}), 200
     else:

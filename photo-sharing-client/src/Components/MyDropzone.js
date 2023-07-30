@@ -20,7 +20,7 @@ const MyDropzone = () => {
     const formData = new FormData();
     formData.append('img', fileToUpload);
 
-    axios.post('http://127.0.0.1:5000/process', formData, {
+    axios.post('http://127.0.0.1:5001/process', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -36,6 +36,7 @@ const MyDropzone = () => {
     setPreview("");
     setFileToUpload(null);
   }
+
 
   return (
     <Box component="section">
