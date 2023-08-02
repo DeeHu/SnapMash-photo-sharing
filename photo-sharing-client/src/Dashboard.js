@@ -13,8 +13,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import imageSrc from './pexels-tanika-3687770.jpg';
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 
 // Citation: https://mui.com/material-ui/react-drawer/
+// https://mui.com/material-ui/react-image-list/
 const drawerWidth = 240;
 
 function Dashboard() {
@@ -62,10 +66,93 @@ function Dashboard() {
         component="main"
         sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
       >
-        <Toolbar />
+      <Toolbar />
+         <ImageList
+          variant="quilted"
+          cols={4}
+        >
+          {itemData.map((item) => (
+            <ImageListItem key={item.img} cols={item.cols || 1} rows={item.rows || 1}>
+              <img
+                {...srcset(item.img, 121, item.rows, item.cols)}
+                alt={item.title}
+                loading="lazy"
+              />
+            </ImageListItem>
+          ))}
+        </ImageList>
       </Box>
     </Box>
   );
 }
+
+function srcset(image: string, size: number, rows = 1, cols = 1) {
+  return {
+    src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
+    srcSet: `${image}?w=${size * cols}&h=${
+      size * rows
+    }&fit=crop&auto=format&dpr=2 2x`,
+  };
+}
+
+const itemData = [
+  {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 1,
+    cols: 2,
+  },
+  {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 2,
+    cols: 1,
+  },
+    {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 1,
+    cols: 1,
+  },
+    {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 1,
+    cols: 1,
+  },
+    {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 1,
+    cols: 1,
+  },
+    {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 1,
+    cols: 1,
+  },
+    {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 1,
+    cols: 1,
+  },  {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 1,
+    cols: 1,
+  },  {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 1,
+    cols: 1,
+  },  {
+    img: imageSrc,
+    title: 'Dog',
+    rows: 1,
+    cols: 1,
+  },
+];
 
 export default Dashboard;
