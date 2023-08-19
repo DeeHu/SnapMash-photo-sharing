@@ -14,7 +14,6 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import axios from 'axios';
-
 import auth from "./Firebase-config";
 
 const AuthForm = ({ isSignup, setIsLogged }) => {
@@ -67,6 +66,23 @@ const AuthForm = ({ isSignup, setIsLogged }) => {
         });
     }
   };
+
+  useEffect(() => {
+    // Set up the listener on mount
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is logged in
+        setIsLogged(true);
+      } else {
+        // User is logged out
+        setIsLogged(false);
+      }
+    });
+
+    // Clean up the listener on unmount
+    return () => unsubscribe();
+  }, [setIsLogged]); // Dependency on setIsLogged so the effect doesn't re-run unless setIsLogged changes
+
 
   return (
     <Container component="main" maxWidth="xs">
