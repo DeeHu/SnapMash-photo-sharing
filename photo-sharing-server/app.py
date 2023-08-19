@@ -1,10 +1,12 @@
-from models import db, User, Group
-from flask import Flask, request, jsonify
+from models import db, User, Group, Photo
+from flask import Flask, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Date, create_engine
 from flask_cors import CORS
 import os
+import datetime
+import uuid
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ[
@@ -84,18 +86,34 @@ def process():
 
         # Save the image to the database
         # new_image = Image(filename=filename, user_id=1)
-        # db.session.add(new_image)
-        # db.session.commit()
+        user_id = request.form.get("user_id")
+        new_photo = Photo(ID=generate_unique_id(), Created_date=datetime.date.today(), Store_path=os.path.join(path, filename), User_ID=user_id, Visibility_setting="Public")
+        db.session.add(new_photo)
+        db.session.commit()
 
         return jsonify({"message": "Image upload successful"}), 200
     else:
         return jsonify({"error": "Upload Failed: Uploaded file is not a image"}), 400
 
+@app.route('/get-user-photos', methods=['GET'])
+def get_user_photos():
+    user_id = request.args.get('user_id')
+    photos = db.session.query(Photo).filter_by(User_ID=user_id).all()
+    # get store_paths
+    photo_paths = [photo.Store_path for photo in photos]
+    
+    return jsonify({"photos": photo_paths})
+
+@app.route('/images/<path:filename>', methods=['GET'])
+def serve_image(filename):
+    return send_from_directory('/app/storage/', filename)
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def generate_unique_id():
+    return str(uuid.uuid4())
 
 if __name__ == "__main__":
     with app.app_context():
