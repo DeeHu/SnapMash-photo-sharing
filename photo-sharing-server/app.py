@@ -43,9 +43,19 @@ def hello():
 @app.route("/user", methods=["POST"])
 def create_user():
     data = request.get_json()
-    new_user = User(name=data["name"])
-    db.session.add(new_user)
-    db.session.commit()
+    print('Received data:', data)
+
+    new_user = User(ID=data['uid'],User_name=data['name'], Email=data['email'], Registration_date=data['date'])
+    print('New user:', new_user)
+
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        print('User added successfully')
+    except Exception as e:
+        db.session.rollback()
+        print('Error:', str(e))
+        return jsonify({'error': str(e)}), 409
     return jsonify({"message": "User created"}), 201
 
 

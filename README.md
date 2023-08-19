@@ -14,7 +14,7 @@ The React application will be accessible at http://localhost:3000, and the Flask
 
 
 ## To run an interactive PostgreSQL terminal (psql) inside the running Docker container
-Example: `docker exec -it 0ea2d608fe40 psql -U postgres`
+Example: `docker exec -it d93ab0a26c84 psql -U postgres`
 
 Explaination: 
 * `docker exec -it`: This Docker command is used to run a command in a running Docker container. The `-it` option provides an interactive terminal to the container.

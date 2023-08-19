@@ -1,4 +1,3 @@
-# models.py
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Date
 
@@ -6,7 +5,7 @@ db = SQLAlchemy()
 
 class User(db.Model):
     __tablename__ = 'user'
-    ID = db.Column(db.String(20), primary_key=True)
+    ID = db.Column(db.String(100), primary_key=True)
     User_name = db.Column(db.String(100))
     Email = db.Column(db.String(100))
     Registration_date = db.Column(Date)
@@ -22,14 +21,14 @@ class Group(db.Model):
 class UserGroup(db.Model):
     __tablename__ = 'user_group'
     ID = db.Column(db.Integer, primary_key=True)
-    User_ID = db.Column(db.String(20), db.ForeignKey('user.ID'))
+    User_ID = db.Column(db.String(100), db.ForeignKey('user.ID'))
     Group_ID = db.Column(db.Integer, db.ForeignKey('group.ID'))
 
 class Friendship(db.Model):
     __tablename__ = 'friendship'
     Friendship_ID = db.Column(db.Integer, primary_key=True)
-    User_ID = db.Column(db.String(20), db.ForeignKey('user.ID'))
-    Friend_ID = db.Column(db.String(20), db.ForeignKey('user.ID'))
+    User_ID = db.Column(db.String(100), db.ForeignKey('user.ID'))
+    Friend_ID = db.Column(db.String(100), db.ForeignKey('user.ID'))
     # Establishing relationship
     user = db.relationship('User', foreign_keys=[User_ID])
     friend = db.relationship('User', foreign_keys=[Friend_ID])
@@ -40,7 +39,7 @@ class Photo(db.Model):
     ID = db.Column(db.String(20), primary_key=True)
     Created_date = db.Column(db.Date)
     Store_path = db.Column(db.String(100))
-    User_ID = db.Column(db.String(20), db.ForeignKey('user.ID'))
+    User_ID = db.Column(db.String(100), db.ForeignKey('user.ID'))
     Visibility_setting = db.Column(db.String(100), db.ForeignKey('photo_visibility.Setting'))
     # Establishing relationships
     user = db.relationship('User', foreign_keys=[User_ID])
@@ -53,7 +52,7 @@ class PhotoVisibility(db.Model):
 class ViewPhoto(db.Model):
     __tablename__ = 'view_photo'
     ViewPhoto_ID = db.Column(db.Integer, primary_key=True)
-    User_ID = db.Column(db.String(20), db.ForeignKey('user.ID'))
+    User_ID = db.Column(db.String(100), db.ForeignKey('user.ID'))
     Photo_ID = db.Column(db.String(20), db.ForeignKey('photo.ID'))
     # Establishing relationships
     user = db.relationship('User', foreign_keys=[User_ID])
