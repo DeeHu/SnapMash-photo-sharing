@@ -2,8 +2,9 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import { Box, Button, Typography } from '@mui/material';
+import auth from "../Components/Login/Firebase-config";
 
-const MyDropzone = () => {
+const MyDropzone = (props) => {
   const [response, setResponse] = useState(null);
   const [preview, setPreview] = useState("");
   const [fileToUpload, setFileToUpload] = useState(null);
@@ -20,12 +21,16 @@ const MyDropzone = () => {
     const formData = new FormData();
     formData.append('img', fileToUpload);
 
+    const userId = auth.currentUser?.uid;
+    formData.append('user_id', userId);
+
     axios.post('http://127.0.0.1:5001/process', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     }).then(res => {
       setResponse(res.data.message);
+      props.onPhotoUpload();
     }).catch(error => {
       console.error(error);
       setResponse(error.response.data.message);

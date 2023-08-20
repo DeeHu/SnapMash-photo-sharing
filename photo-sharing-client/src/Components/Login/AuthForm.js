@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
@@ -8,12 +8,12 @@ import Checkbox from "@mui/material/Checkbox";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
-
+import axios from 'axios';
 import auth from "./Firebase-config";
 
 const AuthForm = ({ isSignup, setIsLogged }) => {
@@ -27,11 +27,28 @@ const AuthForm = ({ isSignup, setIsLogged }) => {
     if (isSignup) {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
+          var user = userCredential.user;
+          var registrationDate = new Date(user.metadata.creationTime);
+
           setIsLogged(true);
           alert("User created successfully");
           setEmail("");
           setPassword("");
           setName("");
+
+          // sending user data to db
+          axios.post('http://127.0.0.1:5001/user', {
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName,
+            date: registrationDate,
+          })
+          .then(response => {
+              console.log('Saved to db successfully:', response.data);
+          })
+          .catch((error) => {
+              console.error('Error saving to db:', error);
+          });
         })
         .catch((error) => {
           alert(error.message);
@@ -49,6 +66,23 @@ const AuthForm = ({ isSignup, setIsLogged }) => {
         });
     }
   };
+
+  useEffect(() => {
+    // Set up the listener on mount
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is logged in
+        setIsLogged(true);
+      } else {
+        // User is logged out
+        setIsLogged(false);
+      }
+    });
+
+    // Clean up the listener on unmount
+    return () => unsubscribe();
+  }, [setIsLogged]); // Dependency on setIsLogged so the effect doesn't re-run unless setIsLogged changes
+
 
   return (
     <Container component="main" maxWidth="xs">
