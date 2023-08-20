@@ -100,13 +100,32 @@ def get_user_photos():
     user_id = request.args.get('user_id')
     photos = db.session.query(Photo).filter_by(User_ID=user_id).all()
     # get store_paths
-    photo_paths = [photo.Store_path for photo in photos]
+    # photo_paths = [photo.Store_path for photo in photos]
+    # Get id, store_path, and User_ID for each photo
+    photo_data = [{"id": photo.ID, "path": photo.Store_path, "User_ID": photo.User_ID} for photo in photos]
     
-    return jsonify({"photos": photo_paths})
+    return jsonify({"photos": photo_data})
 
 @app.route('/images/<path:filename>', methods=['GET'])
 def serve_image(filename):
     return send_from_directory('/app/storage/', filename)
+
+@app.route('/delete-photo', methods=['POST'])
+def delete_photo():
+    photo_id = request.json.get('photo_id')
+    user_id = request.json.get('user_id')
+    
+    photo = Photo.query.get(photo_id)
+    if not photo:
+        return jsonify({"error": "Photo not found"}), 404
+    
+    if photo.User_ID != user_id:
+        return jsonify({"error": "Unauthorized action"}), 403
+
+    db.session.delete(photo)
+    db.session.commit()
+    return jsonify({"message": "Photo deleted successfully"}), 200
+
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
