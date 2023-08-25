@@ -4,6 +4,7 @@ import SideMenu from './SideMenu';
 import ImageDisplay from './ImageDisplay';
 import UploadForm from './UploadForm';
 import UserPhotos from './UserPhotos';
+import ManageFriends from './ManageFriends';
 
 const Dashboard = () => {
   const [photoUploaded, setPhotoUploaded] = useState(false);
@@ -16,6 +17,7 @@ const Dashboard = () => {
     <Grid container spacing={3}>
       <Grid item xs={3}>
         <SideMenu />
+        <ManageFriends />
       </Grid>
       <Grid item xs={6}>
         <ImageDisplay />

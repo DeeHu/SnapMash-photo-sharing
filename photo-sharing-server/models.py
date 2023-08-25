@@ -29,6 +29,7 @@ class Friendship(db.Model):
     Friendship_ID = db.Column(db.Integer, primary_key=True)
     User_ID = db.Column(db.String(100), db.ForeignKey('user.ID'))
     Friend_ID = db.Column(db.String(100), db.ForeignKey('user.ID'))
+    Pending = db.Column(db.Boolean, default=True)
     # Establishing relationship
     user = db.relationship('User', foreign_keys=[User_ID])
     friend = db.relationship('User', foreign_keys=[Friend_ID])

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import auth from './Login/Firebase-config';
+import { Button } from '@mui/material';
 
 const UserPhotos = (props) => {
   const [photoPaths, setPhotoPaths] = useState([]);
@@ -32,7 +33,6 @@ const UserPhotos = (props) => {
       });
       if (response.status === 200) {
         setPhotoPaths(prevPaths => prevPaths.filter(path => path.id !== photoId));
-        alert('Image successfully deleted!');
       }
     } catch (error) {
       console.error("Error deleting photo:", error);
@@ -48,7 +48,10 @@ const UserPhotos = (props) => {
           <div key={index}>
             <img src={imagePath} alt="User Uploaded" style={{ maxWidth: '100%', height: 'auto' }} />
             {User_ID === userId && (
-              <button onClick={() => handleDelete(id)}>Delete</button>
+              // <button onClick={() => handleDelete(id)}>Delete</button>
+              <Button variant="contained" color="error" onClick={() => handleDelete(id)}>
+                Delete
+              </Button>
             )}
           </div>
         );
