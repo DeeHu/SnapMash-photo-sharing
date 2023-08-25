@@ -51,7 +51,7 @@ const PendingFriendRequests = ({ updateFriends, setUpdateFriends, requestSent })
         }
       });
       setSentRequests(prevRequests => prevRequests.filter(req => req.id !== friendId));
-      alert("Friend request deleted!");
+      // alert("Friend request deleted!");
     } catch (error) {
       console.error("Error deleting friend request:", error);
       alert("Error deleting friend request. Please try again.");
@@ -61,7 +61,7 @@ const PendingFriendRequests = ({ updateFriends, setUpdateFriends, requestSent })
   return (
     <Container>
       <h2>Friend Requests</h2>
-      <h3>Received Requests</h3>
+      <h3>Received</h3>
       <List>
         {receivedRequests.map(request => (
           <ListItem key={request.id}>
@@ -72,7 +72,7 @@ const PendingFriendRequests = ({ updateFriends, setUpdateFriends, requestSent })
         ))}
       </List>
 
-      <h3>Sent Requests</h3>
+      <h3>Sent</h3>
       <List>
         {sentRequests.map(request => (
           <ListItem key={request.id}>

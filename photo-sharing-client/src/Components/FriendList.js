@@ -24,7 +24,7 @@ const FriendList = ({ updateFriends, setUpdateFriends }) => {
       const response = await axios.delete(`http://127.0.0.1:5001/delete-friend?currentUserId=${currentUserId}&friendId=${friendId}`);
       if (response.status === 200) {
         setFriends(friends.filter(friend => friend.id !== friendId));
-        alert(response.data.message);
+        // alert(response.data.message);
       } else {
         alert('Error deleting friend.');
       }
