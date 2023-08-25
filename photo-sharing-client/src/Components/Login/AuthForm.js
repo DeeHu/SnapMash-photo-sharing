@@ -57,7 +57,7 @@ const AuthForm = ({ isSignup, setIsLogged }) => {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           setIsLogged(true);
-          alert("Logged in successfully");
+          // alert("Logged in successfully");
           setEmail("");
           setPassword("");
         })
