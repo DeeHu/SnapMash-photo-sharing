@@ -189,10 +189,17 @@ def process():
         os.makedirs(path, exist_ok=True)  # create the directory if it doesn't exist
         file.save(os.path.join(path, filename))
 
+        # visibility
+        visibility_setting = request.form.get("visibility", "Public")
+
         # Save the image to the database
         # new_image = Image(filename=filename, user_id=1)
         user_id = request.form.get("user_id")
-        new_photo = Photo(ID=generate_unique_id(), Created_date=datetime.date.today(), Store_path=os.path.join(path, filename), User_ID=user_id, Visibility_setting="Public")
+        new_photo = Photo(ID=generate_unique_id(), 
+                          Created_date=datetime.date.today(), 
+                          Store_path=os.path.join(path, filename), 
+                          User_ID=user_id, 
+                          Visibility_setting=visibility_setting)
         db.session.add(new_photo)
         db.session.commit()
 
@@ -207,7 +214,7 @@ def get_user_photos():
     # get store_paths
     # photo_paths = [photo.Store_path for photo in photos]
     # Get id, store_path, and User_ID for each photo
-    photo_data = [{"id": photo.ID, "path": photo.Store_path, "User_ID": photo.User_ID} for photo in photos]
+    photo_data = [{"id": photo.ID, "path": photo.Store_path, "User_ID": photo.User_ID, "Visibility_setting": photo.Visibility_setting} for photo in photos]
     
     return jsonify({"photos": photo_data})
 
@@ -230,6 +237,25 @@ def delete_photo():
     db.session.delete(photo)
     db.session.commit()
     return jsonify({"message": "Photo deleted successfully"}), 200
+
+@app.route('/change-photo-visibility', methods=['POST'])
+def change_photo_visibility():
+    try:
+        photo_id = request.json.get('photo_id')
+        new_visibility = request.json.get('visibility')
+        
+        photo = Photo.query.filter_by(ID=photo_id).first()
+        if not photo:
+            return jsonify({"message": "Photo not found"}), 404
+        
+        photo.Visibility_setting = new_visibility
+        db.session.commit()
+        
+        return jsonify({"message": "Visibility updated successfully"}), 200
+        
+    except Exception as e:
+        return jsonify({"message": "Error updating visibility", "error": str(e)}), 500
+
 
 
 def allowed_file(filename):

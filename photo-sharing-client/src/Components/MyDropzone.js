@@ -2,12 +2,14 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import { Box, Button, Typography } from '@mui/material';
+import { RadioGroup, FormControlLabel, Radio, FormControl, FormLabel } from '@mui/material';
 import auth from "../Components/Login/Firebase-config";
 
 const MyDropzone = (props) => {
   const [response, setResponse] = useState(null);
   const [preview, setPreview] = useState("");
   const [fileToUpload, setFileToUpload] = useState(null);
+  const [visibility, setVisibility] = useState("Public");
 
   const onDrop = useCallback((acceptedFiles) => {
     setFileToUpload(acceptedFiles[0]);
@@ -20,6 +22,7 @@ const MyDropzone = (props) => {
     event.preventDefault();
     const formData = new FormData();
     formData.append('img', fileToUpload);
+    formData.append('visibility', visibility);
 
     const userId = auth.currentUser?.uid;
     formData.append('user_id', userId);
@@ -55,6 +58,20 @@ const MyDropzone = (props) => {
         {preview && (
           <Box mt={2}>
             <img src={preview} alt="Preview" style={{maxWidth: "200px", display: 'block', margin: 'auto'}}/>
+
+            <FormControl component="fieldset" style={{ margin: '20px auto', maxWidth: '300px' }}>
+              <FormLabel component="legend">Visibility</FormLabel>
+              <RadioGroup
+                aria-label="visibility"
+                value={visibility}
+                onChange={(event) => setVisibility(event.target.value)}
+              >
+                <FormControlLabel value="Public" control={<Radio />} label="Public" />
+                <FormControlLabel value="Private" control={<Radio />} label="Private" />
+                <FormControlLabel value="Friends" control={<Radio />} label="Friends" />
+              </RadioGroup>
+            </FormControl>
+
             <Button type="submit" variant="contained" color="primary" style={{display: 'block', margin: '20px auto'}}>Confirm</Button>
             <Button onClick={cancelUpload} type="button" variant="contained" color="secondary" style={{display: 'block', margin: 'auto'}}>Choose Another</Button>
           </Box>

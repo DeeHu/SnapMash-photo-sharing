@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import auth from './Login/Firebase-config';
-import { Button } from '@mui/material';
+import { Select, MenuItem, Button } from '@mui/material';
 
 const UserPhotos = (props) => {
   const [photoPaths, setPhotoPaths] = useState([]);
@@ -38,10 +38,28 @@ const UserPhotos = (props) => {
       console.error("Error deleting photo:", error);
     }
   }
+
+  const handleVisibilityChange = async (photoId, newVisibility) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5001/change-photo-visibility', {
+        photo_id: photoId,
+        visibility: newVisibility
+      });
+      if (response.status === 200) {
+        setPhotoPaths(prevPhotos => 
+          prevPhotos.map(photo => 
+            photo.id === photoId ? {...photo, Visibility_setting: newVisibility} : photo
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error changing photo visibility:", error);
+    }
+  }
   
   return (
     <div>
-      {photoPaths.map(({ path, id, User_ID }, index) => {
+      {photoPaths.map(({ path, id, User_ID, Visibility_setting }, index) => {
         if (!path) return null; 
         const imagePath = `http://127.0.0.1:5001/images/${path.split("/").pop()}`;
         return (
@@ -49,9 +67,21 @@ const UserPhotos = (props) => {
             <img src={imagePath} alt="User Uploaded" style={{ maxWidth: '100%', height: 'auto' }} />
             {User_ID === userId && (
               // <button onClick={() => handleDelete(id)}>Delete</button>
-              <Button variant="contained" color="error" onClick={() => handleDelete(id)}>
-                Delete
-              </Button>
+              <div>
+                <Select
+                  value={Visibility_setting}
+                  onChange={(e) => handleVisibilityChange(id, e.target.value)}
+                  variant="outlined"
+                  style={{ marginBottom: '10px' }}
+                >
+                  <MenuItem value="Public">Public</MenuItem>
+                  <MenuItem value="Private">Private</MenuItem>
+                  <MenuItem value="Friends">Friends</MenuItem>
+                </Select>
+                <Button variant="contained" color="error" onClick={() => handleDelete(id)}>
+                  Delete
+                </Button>
+              </div>
             )}
           </div>
         );
