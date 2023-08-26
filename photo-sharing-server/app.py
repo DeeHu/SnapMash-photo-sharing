@@ -60,6 +60,15 @@ def create_user():
         return jsonify({'error': str(e)}), 409
     return jsonify({"message": "User created"}), 201
 
+# getting user info
+@app.route('/user/<string:ID>', methods=['GET'])
+def get_user_by_id(ID):
+    user = User.query.filter_by(ID=ID).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    return jsonify(user.as_dict())
+
+# when searching freinds
 @app.route('/users', methods=['GET'])
 def get_user():
     email = request.args.get('email')
@@ -222,10 +231,10 @@ def get_user_photos():
 
     # Check if the user is viewing their own dashboard:
     if target_uid == current_uid:
-        photos = db.session.query(Photo).filter_by(User_ID=target_uid).all()
+        photos = db.session.query(Photo).filter_by(User_ID=target_uid).order_by(Photo.Created_date.desc()).all()
     else:
         # If viewing a friend's dashboard, only show photos with visibility "Public" or "Friends"
-        photos = db.session.query(Photo).filter_by(User_ID=target_uid).filter(Photo.Visibility_setting.in_(["Public", "Friends"])).all()
+        photos = db.session.query(Photo).filter_by(User_ID=target_uid).filter(Photo.Visibility_setting.in_(["Public", "Friends"])).order_by(Photo.Created_date.desc()).all()
 
     # photos = db.session.query(Photo).filter_by(User_ID=user_id).all()
     # Get id, store_path, and User_ID for each photo

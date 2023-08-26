@@ -11,6 +11,13 @@ class User(db.Model):
     Registration_date = db.Column(Date)
     groups = db.relationship('Group', secondary='user_group', backref=db.backref('users', lazy='dynamic'))
 
+    def as_dict(self):
+        return {
+            'ID': self.ID,
+            'User_name': self.User_name,
+            'Email': self.Email,
+            'Registration_date': self.Registration_date.strftime('%Y-%m-%d') if self.Registration_date else None
+        }
 
 class Group(db.Model):
     __tablename__ = 'group'

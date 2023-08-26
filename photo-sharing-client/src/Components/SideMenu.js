@@ -24,10 +24,14 @@ const SideMenu = () => {
           <ListItemText primary={item} />
         </ListItem>
       ))}
-      <Button onClick={goToOwnDashboard} variant="contained" style={{ marginTop: '10px' }}>
-        My Dashboard
-      </Button>
-      <LogoutButton onLogout={ handlePostLogout } />
+      <div>
+        <Button onClick={goToOwnDashboard} variant="contained" style={{ marginTop: '10px' }}>
+          My Dashboard
+        </Button>
+      </div>
+      <div>
+        <LogoutButton onLogout={ handlePostLogout } />
+      </div>
     </List>
   );
 }

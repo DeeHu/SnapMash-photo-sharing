@@ -38,6 +38,7 @@ export const FriendRequest = ({ onRequestSent }) => {
 
   return (
     <div>
+      <h2>Search Friend</h2>
       <TextField
         label="Search by email"
         value={email}

@@ -12,6 +12,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
+  updateProfile,
 } from "firebase/auth";
 import axios from 'axios';
 import auth from "./Firebase-config";
@@ -28,6 +29,13 @@ const AuthForm = ({ isSignup, setIsLogged }) => {
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           var user = userCredential.user;
+          return updateProfile(user, {
+            displayName: name,
+          });
+        })
+        .then(() => {
+          // var user = userCredential.user;
+          var user = auth.currentUser;
           var registrationDate = new Date(user.metadata.creationTime);
 
           setIsLogged(true);
@@ -57,7 +65,6 @@ const AuthForm = ({ isSignup, setIsLogged }) => {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           setIsLogged(true);
-          // alert("Logged in successfully");
           setEmail("");
           setPassword("");
         })
