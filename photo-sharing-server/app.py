@@ -220,7 +220,7 @@ def process():
 def get_user_photos():
     target_uid = request.args.get('target_uid')
     current_uid = request.args.get('current_uid')
-    # user_id = request.args.get('user_id')
+
     if not target_uid:
         return jsonify({"error": "target_uid is required"}), 400
 
@@ -233,9 +233,11 @@ def get_user_photos():
     if target_uid == current_uid:
         photos = db.session.query(Photo).filter_by(User_ID=target_uid).order_by(Photo.Created_date.desc()).all()
     else:
-        # If viewing a friend's dashboard, only show photos with visibility "Public" or "Friends"
-        photos = db.session.query(Photo).filter_by(User_ID=target_uid).filter(Photo.Visibility_setting.in_(["Public", "Friends"])).order_by(Photo.Created_date.desc()).all()
-
+        is_friend = db.session.query(Friendship).filter_by(User_ID=target_uid, Friend_ID=current_uid, Pending=False).first() or db.session.query(Friendship).filter_by(User_ID=current_uid, Friend_ID=target_uid, Pending=False).first()
+        if is_friend:
+            photos = db.session.query(Photo).filter_by(User_ID=target_uid).filter(Photo.Visibility_setting.in_(["Public", "Friends"])).order_by(Photo.Created_date.desc()).all()
+        else:
+            photos = db.session.query(Photo).filter_by(User_ID=target_uid).filter_by(Visibility_setting="Public").order_by(Photo.Created_date.desc()).all()
     # photos = db.session.query(Photo).filter_by(User_ID=user_id).all()
     # Get id, store_path, and User_ID for each photo
     photo_data = [{"id": photo.ID, "path": photo.Store_path, "User_ID": photo.User_ID, "Visibility_setting": photo.Visibility_setting} for photo in photos]

@@ -16,18 +16,20 @@ const Dashboard = () => {
   const [photoUploaded, setPhotoUploaded] = useState(false);
 
   useEffect(() => {
-    const fetchUserName = async () => {
+    const fetchUserName = async (userIdToFetch) => {
       try {
-        const response = await axios.get(`http://127.0.0.1:5001/user/${auth.currentUser?.uid}`);
+        // const response = await axios.get(`http://127.0.0.1:5001/user/${auth.currentUser?.uid}`);
+        const response = await axios.get(`http://127.0.0.1:5001/user/${userIdToFetch}`);
         setUserName(response.data.User_name);
       } catch (error) {
         console.error("Error fetching user name:", error);
       }
     }
-    if (auth.currentUser) {
-      fetchUserName();
+    const userIdToFetch = uid || auth.currentUser?.uid;
+    if (auth.currentUser || uid) {
+      fetchUserName(userIdToFetch);
     }
-  }, [auth.currentUser]);
+  }, [uid, auth.currentUser]);
   
 
   const handlePhotoUpload = () => {
@@ -37,9 +39,9 @@ const Dashboard = () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={3}>
-        {isOwnDashboard && <h2>Hi, {userName}!</h2>}
+        {isOwnDashboard ? <h2>Hi, {userName}!</h2> : <h2>{userName}'s gallery</h2>}
         <SideMenu />
-        <ManageFriends />
+        {isOwnDashboard && <ManageFriends />}
       </Grid>
       <Grid item xs={6}>
         <ImageDisplay />
