@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import auth from './Login/Firebase-config';
 import { Select, MenuItem, Button } from '@mui/material';
 
 const UserPhotos = (props) => {
-  const [photoPaths, setPhotoPaths] = useState([]);
   const userId = auth.currentUser?.uid;
+  const { uid } = useParams();
+  const [photoPaths, setPhotoPaths] = useState([]);
   
   useEffect(() => {
     const fetchPhotos = async () => {
-      const userId = auth.currentUser?.uid;
+      const targetUID = uid || auth.currentUser?.uid; 
+      // If you're on a friend's dashboard, it will use the friend's email, otherwise it will use your email.
+      // const userId = auth.currentUser?.uid;
       try {
         const response = await axios.get('http://127.0.0.1:5001/get-user-photos', {
           params: {
-            user_id: userId
+            target_uid: targetUID, // The UID of the dashboard you're viewing
+            current_uid: auth.currentUser?.uid // The UID of the currently logged-in user
+            // user_id: userId
           }
         });
         setPhotoPaths(response.data.photos);
@@ -23,7 +29,7 @@ const UserPhotos = (props) => {
     };
 
     fetchPhotos();
-  }, [props.photoUploaded]); // useEffect listens to changes for prop here
+  }, [props.photoUploaded, uid]); // useEffect listens to changes for prop here
 
   const handleDelete = async (photoId) => {
     try {

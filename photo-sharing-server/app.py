@@ -209,10 +209,25 @@ def process():
 
 @app.route('/get-user-photos', methods=['GET'])
 def get_user_photos():
-    user_id = request.args.get('user_id')
-    photos = db.session.query(Photo).filter_by(User_ID=user_id).all()
-    # get store_paths
-    # photo_paths = [photo.Store_path for photo in photos]
+    target_uid = request.args.get('target_uid')
+    current_uid = request.args.get('current_uid')
+    # user_id = request.args.get('user_id')
+    if not target_uid:
+        return jsonify({"error": "target_uid is required"}), 400
+
+    target_user = db.session.query(User).filter_by(ID=target_uid).first()
+
+    if not target_user:
+        return jsonify({"error": "No user found with the given UID"}), 404
+
+    # Check if the user is viewing their own dashboard:
+    if target_uid == current_uid:
+        photos = db.session.query(Photo).filter_by(User_ID=target_uid).all()
+    else:
+        # If viewing a friend's dashboard, only show photos with visibility "Public" or "Friends"
+        photos = db.session.query(Photo).filter_by(User_ID=target_uid).filter(Photo.Visibility_setting.in_(["Public", "Friends"])).all()
+
+    # photos = db.session.query(Photo).filter_by(User_ID=user_id).all()
     # Get id, store_path, and User_ID for each photo
     photo_data = [{"id": photo.ID, "path": photo.Store_path, "User_ID": photo.User_ID, "Visibility_setting": photo.Visibility_setting} for photo in photos]
     
