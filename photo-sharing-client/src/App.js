@@ -29,6 +29,7 @@ function App() {
           <Route path="/login" element={isLogged ? <Navigate to="/dashboard" /> : <AuthForm isSignup={false} setIsLogged={setIsLogged}/>}/>
           <Route path="/signup" element={isLogged ? <Navigate to="/dashboard" /> : <AuthForm isSignup={true} setIsLogged={setIsLogged}/>}/>
           <Route path="/dashboard" element={isLogged ? <Dashboard /> : <Navigate to="/login" />}/>
+          <Route path="/dashboard/:uid" element={isLogged ? <Dashboard /> : <Navigate to="/login" />}/>
         </Routes>
       </Router>
     </div>

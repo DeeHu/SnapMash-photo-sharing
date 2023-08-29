@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, List, ListItem, Container } from '@mui/material';
 import axios from 'axios';
 import auth from "../Components/Login/Firebase-config";
 
 const FriendList = ({ updateFriends, setUpdateFriends }) => {
+  const navigate = useNavigate();
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
@@ -34,14 +36,23 @@ const FriendList = ({ updateFriends, setUpdateFriends }) => {
     }
   };
 
+  const handleFriendClick = (friendID) => {
+    navigate(`/dashboard/${friendID}`);
+  };
+
   return (
     <Container>
       <h2>Friends</h2>
       <List>
         {friends.map(friend => (
-          <ListItem key={friend.id}>
-            {friend.email}
-            <Button variant="outlined" onClick={() => handleDeleteFriend(friend.id)}>Delete</Button>
+          <ListItem key={friend.id}> 
+            <span onClick={() => handleFriendClick(friend.id)} style={{cursor: 'pointer'}}>
+              {friend.email}
+            </span>
+            <Button variant="outlined" onClick={(e) => {
+              e.stopPropagation(); // prevent the ListItem click event from firing
+              handleDeleteFriend(friend.id)
+            }}>Delete</Button>
           </ListItem>
         ))}
       </List>

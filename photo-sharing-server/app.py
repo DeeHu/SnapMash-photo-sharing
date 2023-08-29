@@ -60,6 +60,15 @@ def create_user():
         return jsonify({'error': str(e)}), 409
     return jsonify({"message": "User created"}), 201
 
+# getting user info
+@app.route('/user/<string:ID>', methods=['GET'])
+def get_user_by_id(ID):
+    user = User.query.filter_by(ID=ID).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    return jsonify(user.as_dict())
+
+# when searching freinds
 @app.route('/users', methods=['GET'])
 def get_user():
     email = request.args.get('email')
@@ -189,10 +198,17 @@ def process():
         os.makedirs(path, exist_ok=True)  # create the directory if it doesn't exist
         file.save(os.path.join(path, filename))
 
+        # visibility
+        visibility_setting = request.form.get("visibility", "Public")
+
         # Save the image to the database
         # new_image = Image(filename=filename, user_id=1)
         user_id = request.form.get("user_id")
-        new_photo = Photo(ID=generate_unique_id(), Created_date=datetime.date.today(), Store_path=os.path.join(path, filename), User_ID=user_id, Visibility_setting="Public")
+        new_photo = Photo(ID=generate_unique_id(), 
+                          Created_date=datetime.date.today(), 
+                          Store_path=os.path.join(path, filename), 
+                          User_ID=user_id, 
+                          Visibility_setting=visibility_setting)
         db.session.add(new_photo)
         db.session.commit()
 
@@ -202,12 +218,29 @@ def process():
 
 @app.route('/get-user-photos', methods=['GET'])
 def get_user_photos():
-    user_id = request.args.get('user_id')
-    photos = db.session.query(Photo).filter_by(User_ID=user_id).all()
-    # get store_paths
-    # photo_paths = [photo.Store_path for photo in photos]
+    target_uid = request.args.get('target_uid')
+    current_uid = request.args.get('current_uid')
+
+    if not target_uid:
+        return jsonify({"error": "target_uid is required"}), 400
+
+    target_user = db.session.query(User).filter_by(ID=target_uid).first()
+
+    if not target_user:
+        return jsonify({"error": "No user found with the given UID"}), 404
+
+    # Check if the user is viewing their own dashboard:
+    if target_uid == current_uid:
+        photos = db.session.query(Photo).filter_by(User_ID=target_uid).order_by(Photo.Created_date.desc()).all()
+    else:
+        is_friend = db.session.query(Friendship).filter_by(User_ID=target_uid, Friend_ID=current_uid, Pending=False).first() or db.session.query(Friendship).filter_by(User_ID=current_uid, Friend_ID=target_uid, Pending=False).first()
+        if is_friend:
+            photos = db.session.query(Photo).filter_by(User_ID=target_uid).filter(Photo.Visibility_setting.in_(["Public", "Friends"])).order_by(Photo.Created_date.desc()).all()
+        else:
+            photos = db.session.query(Photo).filter_by(User_ID=target_uid).filter_by(Visibility_setting="Public").order_by(Photo.Created_date.desc()).all()
+    # photos = db.session.query(Photo).filter_by(User_ID=user_id).all()
     # Get id, store_path, and User_ID for each photo
-    photo_data = [{"id": photo.ID, "path": photo.Store_path, "User_ID": photo.User_ID} for photo in photos]
+    photo_data = [{"id": photo.ID, "path": photo.Store_path, "User_ID": photo.User_ID, "Visibility_setting": photo.Visibility_setting} for photo in photos]
     
     return jsonify({"photos": photo_data})
 
@@ -230,6 +263,25 @@ def delete_photo():
     db.session.delete(photo)
     db.session.commit()
     return jsonify({"message": "Photo deleted successfully"}), 200
+
+@app.route('/change-photo-visibility', methods=['POST'])
+def change_photo_visibility():
+    try:
+        photo_id = request.json.get('photo_id')
+        new_visibility = request.json.get('visibility')
+        
+        photo = Photo.query.filter_by(ID=photo_id).first()
+        if not photo:
+            return jsonify({"message": "Photo not found"}), 404
+        
+        photo.Visibility_setting = new_visibility
+        db.session.commit()
+        
+        return jsonify({"message": "Visibility updated successfully"}), 200
+        
+    except Exception as e:
+        return jsonify({"message": "Error updating visibility", "error": str(e)}), 500
+
 
 
 def allowed_file(filename):
