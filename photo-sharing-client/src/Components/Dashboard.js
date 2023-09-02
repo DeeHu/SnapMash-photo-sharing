@@ -8,14 +8,32 @@ import UserPhotos from './UserPhotos';
 import ManageFriends from './ManageFriends';
 import axios from "axios";
 import auth from "../Components/Login/Firebase-config";
+import TagPresetForm from './TagPresetForm';
 
 const Dashboard = () => {
   const { uid } = useParams();
   const isOwnDashboard = !uid || uid === auth.currentUser?.uid;
   const [userName, setUserName] = useState("");
   const [photoUploaded, setPhotoUploaded] = useState(false);
+  const [fetchedPresets, setFetchedPresets] = useState([]);
+
+  const fetchPresets = async () => {
+    const userId = auth.currentUser?.uid;
+    try {
+      const response = await axios.get(`http://127.0.0.1:5001/get-user-tag-presets?user_id=${userId}`);
+      setFetchedPresets(response.data.tagPresets);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to fetch tag presets.');
+    }
+  };
+
+  const updateFetchedPresets = (newPresets) => {
+    setFetchedPresets(newPresets);
+  };
 
   useEffect(() => {
+    const userIdToFetch = uid || auth.currentUser?.uid;
     const fetchUserName = async (userIdToFetch) => {
       try {
         // const response = await axios.get(`http://127.0.0.1:5001/user/${auth.currentUser?.uid}`);
@@ -25,9 +43,9 @@ const Dashboard = () => {
         console.error("Error fetching user name:", error);
       }
     }
-    const userIdToFetch = uid || auth.currentUser?.uid;
     if (auth.currentUser || uid) {
       fetchUserName(userIdToFetch);
+      fetchPresets();
     }
   }, [uid, auth.currentUser]);
   
@@ -48,7 +66,8 @@ const Dashboard = () => {
         <UserPhotos photoUploaded={photoUploaded} />
       </Grid>
       <Grid item xs={3}>
-        {isOwnDashboard && <UploadForm onPhotoUpload={handlePhotoUpload} />}
+        {isOwnDashboard && <UploadForm onPhotoUpload={handlePhotoUpload} presets={fetchedPresets} updateFetchedPresets={updateFetchedPresets} />}
+        {isOwnDashboard && <TagPresetForm tagPresets={fetchedPresets} setTagPresets={setFetchedPresets} fetchPresets={fetchPresets} />}
       </Grid>
     </Grid>
   );

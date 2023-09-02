@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import { Box, Button, Typography } from '@mui/material';
@@ -10,19 +10,85 @@ const MyDropzone = (props) => {
   const [preview, setPreview] = useState("");
   const [fileToUpload, setFileToUpload] = useState(null);
   const [visibility, setVisibility] = useState("Public");
+  const [tag, setTag] = useState("");
+  const [fetchedTag, setFetchedTag] = useState("");
+  const fetchedPresets = props.presets;
+  const [isInputActive, setIsInputActive] = useState(false);
+
+
+  const fetchTagFromAPI = async (file) => {
+    // fetch the tag from the API and set it
+    const fetchedTagFromAPI = "mock"; // mock API data
+    setFetchedTag(fetchedTagFromAPI);
+    
+    const presetVisibility = getVisibilityForTag(fetchedTagFromAPI);
+    if (presetVisibility) {
+      setVisibility(presetVisibility);
+    }
+  };
+
+  const getVisibilityForTag = (tag) => {
+    // get the predetermined visibility for the tag if exists
+    const preset = fetchedPresets.find(p => p.tagName === tag);
+    return preset ? preset.visibility : "Public"; 
+  };
 
   const onDrop = useCallback((acceptedFiles) => {
-    setFileToUpload(acceptedFiles[0]);
-    setPreview(URL.createObjectURL(acceptedFiles[0]));
+    const file = acceptedFiles[0];
+    setFileToUpload(file);
+    setPreview(URL.createObjectURL(file));
+    fetchTagFromAPI(file);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+  const handleTagChange = (e) => {
+    const newTag = e.target.value;
+  
+    if (newTag === 'custom') {
+      toggleInputActive();
+      return;
+    }
+  
+    setTag(newTag);
+    const presetVisibility = getVisibilityForTag(newTag);
+    if (presetVisibility) {
+      setVisibility(presetVisibility);
+    }
+  };
+
+  const handleTagInputChange = (e) => {
+    setTag(e.target.value);
+  };
+  
+  const toggleInputActive = () => {
+    setIsInputActive(true);
+  };
+
+  const updateUserPresets = (newTag, visibility) => {
+    const userId = auth.currentUser?.uid;
+    const newPresets = [...fetchedPresets, { tagName: newTag, visibility }];
+    
+    axios.post('http://127.0.0.1:5001/set-user-tag-presets', {
+      tagPresets: newPresets,
+      user_id: userId,
+    }).then(() => {
+      console.log('Tag presets updated successfully!');
+      props.updateFetchedPresets(newPresets);
+    }).catch((err) => {
+      console.error(err);
+      console.log('Failed to update tag presets.');
+    });
+  };
+  
+
   const uploadImage = (event) => {
     event.preventDefault();
+    const effectiveTag = tag === "" ? "" : (tag || fetchedTag);
     const formData = new FormData();
     formData.append('img', fileToUpload);
     formData.append('visibility', visibility);
+    formData.append('tag', effectiveTag);
 
     const userId = auth.currentUser?.uid;
     formData.append('user_id', userId);
@@ -34,6 +100,17 @@ const MyDropzone = (props) => {
     }).then(res => {
       setResponse(res.data.message);
       props.onPhotoUpload();
+
+      // Check if new or fetched tag is not in user's presets
+      if (effectiveTag && !fetchedPresets.some(p => p.tagName === effectiveTag)) {
+        updateUserPresets(effectiveTag, visibility);
+      }
+
+      // resetting the states to initial values
+      setPreview("");
+      setFileToUpload(null);
+      setVisibility("Public");
+      setTag("");
     }).catch(error => {
       console.error(error);
       setResponse(error.response.data.message);
@@ -44,7 +121,6 @@ const MyDropzone = (props) => {
     setPreview("");
     setFileToUpload(null);
   }
-
 
   return (
     <Box component="section">
@@ -58,6 +134,34 @@ const MyDropzone = (props) => {
         {preview && (
           <Box mt={2}>
             <img src={preview} alt="Preview" style={{maxWidth: "200px", display: 'block', margin: 'auto'}}/>
+
+            <FormControl style={{ margin: '20px auto', minWidth: '300px', maxWidth: '500px' }}>
+              <FormLabel component="legend">Tag</FormLabel>
+              {isInputActive ? (
+                <input
+                  value={tag}
+                  onChange={handleTagInputChange}
+                  onBlur={() => setIsInputActive(false)}
+                  autoFocus
+                />
+              ) : (
+                <select value={tag} onChange={handleTagChange} style={{ width: '100%' }}>
+                  <option value="">
+                    Choose a tag or input your own
+                  </option>
+                  {fetchedTag && <option value={fetchedTag}>{fetchedTag} (Fetched)</option>}
+                  {fetchedPresets.map((preset, index) => (
+                    <option key={index} value={preset.tagName}>
+                      {preset.tagName}
+                    </option>
+                  ))}
+                  <option value="custom">
+                    Input your own tag
+                  </option>
+                </select>
+              )}
+            </FormControl>
+
 
             <FormControl component="fieldset" style={{ margin: '20px auto', maxWidth: '300px' }}>
               <FormLabel component="legend">Visibility</FormLabel>
@@ -73,7 +177,7 @@ const MyDropzone = (props) => {
             </FormControl>
 
             <Button type="submit" variant="contained" color="primary" style={{display: 'block', margin: '20px auto'}}>Confirm</Button>
-            <Button onClick={cancelUpload} type="button" variant="contained" color="secondary" style={{display: 'block', margin: 'auto'}}>Choose Another</Button>
+            <Button onClick={cancelUpload} type="button" variant="contained" color="secondary" style={{display: 'block', margin: 'auto'}}>Cancel</Button>
           </Box>
         )}
         {response && <Box mt={2}><Typography variant="body1">{response}</Typography></Box>}

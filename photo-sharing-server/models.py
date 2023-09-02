@@ -71,6 +71,7 @@ class Tag(db.Model):
     ID = db.Column(db.String(100), primary_key=True)
     Name = db.Column(db.String(100))
     Photo_ID = db.Column(db.String(100), db.ForeignKey('photo.ID'))
+    # is Visibility_setting necessary here?
     Visibility_setting = db.Column(db.String(100), db.ForeignKey('tag_visibility.Setting'))
     # Establishing relationships
     photo = db.relationship('Photo', foreign_keys=[Photo_ID])
@@ -87,3 +88,13 @@ class PhotoTag(db.Model):
     # Establishing relationships
     photo = db.relationship('Photo', foreign_keys=[Photo_ID])
     tag = db.relationship('Tag', foreign_keys=[Tag_ID])
+
+class UserTagPreset(db.Model):
+    __tablename__ = 'user_tag_preset'
+    ID = db.Column(db.String(100), primary_key=True)
+    User_ID = db.Column(db.String(100), db.ForeignKey('user.ID'))
+    Tag_Name = db.Column(db.String(100))
+    Visibility_setting = db.Column(db.String(100), db.ForeignKey('tag_visibility.Setting'))
+    # Establishing relationships
+    user = db.relationship('User', foreign_keys=[User_ID])
+    setting = db.relationship('TagVisibility', foreign_keys=[Visibility_setting])

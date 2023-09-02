@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import auth from './Login/Firebase-config';
-import { Select, MenuItem, Button } from '@mui/material';
+import { Select, MenuItem, Button, TextField } from '@mui/material';
 
 const UserPhotos = (props) => {
   const userId = auth.currentUser?.uid;
   const { uid } = useParams();
   const [photoPaths, setPhotoPaths] = useState([]);
+  const [tagMap, setTagMap] = useState({});
   
   useEffect(() => {
     const fetchPhotos = async () => {
@@ -62,15 +63,83 @@ const UserPhotos = (props) => {
       console.error("Error changing photo visibility:", error);
     }
   }
+
+  const handleAddTag = async (photoId, newTag) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5001/add-tag', {
+        photo_id: photoId,
+        tag: newTag
+      });
+      if (response.status === 200) {
+        setPhotoPaths(prevPhotos => 
+          prevPhotos.map(photo => 
+            photo.id === photoId ? {...photo, tags: [...photo.tags, newTag]} : photo
+          )
+        );
+        setTagMap(prevTagMap => ({ ...prevTagMap, [photoId]: '' }));
+      }
+    } catch (error) {
+      console.error("Error adding tag:", error);
+    }
+  };
+
+  const handleDeleteTag = async (photoId, tag) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5001/delete-tag', {
+        photo_id: photoId,
+        tag
+      });
+      if (response.status === 200) {
+        setPhotoPaths(prevPhotos =>
+          prevPhotos.map(photo => 
+            photo.id === photoId ? {...photo, tags: photo.tags.filter(t => t !== tag)} : photo
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting tag:", error);
+    }
+  };
   
   return (
     <div>
-      {photoPaths.map(({ path, id, User_ID, Visibility_setting }, index) => {
+      {photoPaths.map(({ path, id, User_ID, Visibility_setting, tags }, index) => {
         if (!path) return null; 
         const imagePath = `http://127.0.0.1:5001/images/${path.split("/").pop()}`;
         return (
           <div key={index}>
             <img src={imagePath} alt="User Uploaded" style={{ maxWidth: '100%', height: 'auto' }} />
+            {tags && (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div>Tags: </div>
+                <div>
+                  {tags.map((tag, tagIndex) => (
+                    <span key={tagIndex}>
+                      {tag} {User_ID === userId && <Button size="small" onClick={() => handleDeleteTag(id, tag)}>X</Button>}
+                    </span>
+                  ))}
+                </div>
+                {User_ID === userId && (
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <TextField 
+                      label="New Tag"
+                      value={tagMap[id] || ''}
+                      onChange={(e) => setTagMap({ ...tagMap, [id]: e.target.value })}
+                      style={{ marginLeft: "10px" }}
+                    />
+                    <Button 
+                      variant="contained" 
+                      color="primary" 
+                      onClick={() => handleAddTag(id, tagMap[id] || '')}
+                      style={{ marginLeft: "10px" }}
+                    >
+                      Add Tag
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
             {User_ID === userId && (
               // <button onClick={() => handleDelete(id)}>Delete</button>
               <div>
