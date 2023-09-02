@@ -16,16 +16,45 @@ const MyDropzone = (props) => {
   const [isInputActive, setIsInputActive] = useState(false);
 
 
-  const fetchTagFromAPI = async (file) => {
-    // fetch the tag from the API and set it
-    const fetchedTagFromAPI = "mock"; // mock API data
-    setFetchedTag(fetchedTagFromAPI);
+  // const fetchTagFromAPI = async (file) => {
+  //   // fetch the tag from the API and set it
+  //   const fetchedTagFromAPI = "mock"; // mock API data
+  //   setFetchedTag(fetchedTagFromAPI);
     
-    const presetVisibility = getVisibilityForTag(fetchedTagFromAPI);
-    if (presetVisibility) {
-      setVisibility(presetVisibility);
+  //   const presetVisibility = getVisibilityForTag(fetchedTagFromAPI);
+  //   if (presetVisibility) {
+  //     setVisibility(presetVisibility);
+  //   }
+  // };
+
+  const fetchTagFromAPI = async (file) => {
+    const formData = new FormData();
+    formData.append('img', file);
+  
+    try {
+      const response = await axios.post('http://127.0.0.1:5001/fetch-tag', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+  
+      const fetchedTags = response.data.tags;
+      
+      if (fetchedTags && fetchedTags.length > 0) {
+        const fetchedTagFromAPI = fetchedTags[0];  // Pick the first label
+        setFetchedTag(fetchedTagFromAPI);
+  
+        const presetVisibility = getVisibilityForTag(fetchedTagFromAPI);
+        if (presetVisibility) {
+          setVisibility(presetVisibility);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch tag:", error);
     }
   };
+  
+  
 
   const getVisibilityForTag = (tag) => {
     // get the predetermined visibility for the tag if exists

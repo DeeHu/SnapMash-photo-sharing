@@ -1,2 +1,5 @@
 __pycache__/
 env/
+.env
+/.env
+photo-sharing-388604-1452515ca8ea.json
