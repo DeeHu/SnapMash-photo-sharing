@@ -7,6 +7,9 @@ from flask_cors import CORS
 import os
 import datetime
 import uuid
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ[
@@ -443,6 +446,39 @@ def get_user_tag_presets():
     except Exception as e:
         print(e)
         return jsonify({"error": "Unable to fetch tag presets"}), 400
+
+
+
+
+def detect_labels(file_stream):
+    from google.cloud import vision
+    """Detects labels in the uploaded image file"""
+    client = vision.ImageAnnotatorClient()
+    content = file_stream.read()
+    image = vision.Image(content=content)
+    response = client.label_detection(image=image)
+    labels = response.label_annotations
+    
+    if response.error.message:
+        raise Exception(
+            "{}\nFor more info on error messages, check: "
+            "https://cloud.google.com/apis/design/errors".format(response.error.message)
+        )
+
+    # Create a list to store the label descriptions
+    label_list = [label.description for label in labels]
+    return label_list
+
+@app.route('/fetch-tag', methods=['POST'])
+def fetch_tag_from_api():
+    from werkzeug.datastructures import FileStorage
+    uploaded_file: FileStorage = request.files.get('img')
+
+    if uploaded_file:
+        tags = detect_labels(uploaded_file.stream)
+        return jsonify({'tags': tags}), 200
+    else:
+        return jsonify({'error': 'No file uploaded'}), 400
 
 
 
