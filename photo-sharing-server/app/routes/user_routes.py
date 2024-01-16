@@ -1,8 +1,10 @@
 from flask import Blueprint, request, jsonify
+from sqlalchemy import create_engine
 from ..models.models import Friendship, User, db  # Adjust the import path as needed
 from ..utils import generate_unique_id  # Assuming utility functions are in utils.py
 
 user_bp = Blueprint('user_bp', __name__)
+
 
 @user_bp.route("/user", methods=["POST"])
 def create_user():

@@ -2,4 +2,10 @@ __pycache__/
 env/
 .env
 /.env
-photo-sharing-388604-1452515ca8ea.json
+photo-sharing-388604-a9033476721a.json
+
+
+docker run -v photo-sharing-server/photo-sharing-388604-a9033476721a.json:/tmp/keys/photo-sharing-388604-a9033476721a.json -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/photo-sharing-388604-a9033476721a.json my-flask-app
+
+
+

@@ -1,0 +1,12 @@
+# Exclude the service account file
+photo-sharing-388604-a9033476721a.json
+
+# Other files and directories to exclude
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+build
+dist

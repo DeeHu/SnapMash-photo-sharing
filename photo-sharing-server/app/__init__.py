@@ -1,7 +1,6 @@
+from flask import Flask, app
 from sqlalchemy import create_engine
-from .models.models import db, User, Group, Photo, Friendship, Tag, PhotoTag, TagVisibility, UserTagPreset
-from flask import Flask, request, jsonify, send_from_directory
-from werkzeug.utils import secure_filename
+from .models.models import db
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -34,9 +33,22 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix='/')
     app.register_blueprint(photo_bp, url_prefix='/')
 
-
+    @app.route("/")
+    def hello():
+        try:
+            engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+            connection = engine.connect()
+            connection.close()
+            return "Database connected successfully!"
+        except Exception as e:
+            return str(e)
+    
+    return app
+    
+    
 def create_tables():
     db.create_all()  # This will create tables according to the above schema if they do not exist
+
 
 
 

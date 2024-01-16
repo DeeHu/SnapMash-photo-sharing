@@ -8,10 +8,13 @@ services:
       - '5001:5000'
     volumes:
       - './photo-sharing-server/storage:/app/storage'
+      - './photo-sharing-server/photo-sharing-388604-a9033476721a.json:/app/photo-sharing-388604-a9033476721a.json'
     depends_on:
       - db
     environment:
       DATABASE_URL: "postgresql://postgres:postgres@db:5432/postgres"
+      GOOGLE_APPLICATION_CREDENTIALS: "/app/photo-sharing-388604-a9033476721a.json"
+      
 
   frontend:
     build:
